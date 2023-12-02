@@ -2,6 +2,8 @@ import json
 import socket
 import praw
 from praw.models.reddit.subreddit import SubredditStream
+from datetime import datetime
+
 
 
 class RedditProducer(SubredditStream):
@@ -12,15 +14,27 @@ class RedditProducer(SubredditStream):
     def run(self):
         for comment in self.comments(skip_existing=False):
             ###### your logic goes here #######
-            print(dir(comment))
-            #### check the PRAW docunmentation to see
-            #### what attributes from comment are available
-            res = 'what will be sent to spark'
-            ###################################
-            self.socket.send(
-                (repr({'content':res,'name':'Hugo'})+'\n')
-                    .encode('utf-8')
-            )        
+
+            #comment_id = comment.id
+            #submission = comment.link_id.split("_")[-1]
+
+            bigtime = str(datetime.utcfromtimestamp(comment.created_utc)).split()
+            date = bigtime[0]
+            time = bigtime[1]
+
+            data = {
+                "author":comment.author.id,
+                "body":comment.body,
+                "subreddit":comment.subreddit.display_name,
+                "created_utc":comment.created_utc,
+                "date":date,
+                "time":time
+            }
+
+            print(data['created_utc'])
+
+            self.socket.send((repr(data) +'\n').encode('utf-8'))
+
 
 
 
