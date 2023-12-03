@@ -15,15 +15,12 @@ class RedditProducer(SubredditStream):
         for comment in self.comments(skip_existing=False):
             ###### your logic goes here #######
 
-            #comment_id = comment.id
-            #submission = comment.link_id.split("_")[-1]
-
             bigtime = str(datetime.utcfromtimestamp(comment.created_utc)).split()
             date = bigtime[0]
             time = bigtime[1]
 
             data = {
-                "author":comment.author.id,
+                "author":comment.author.name,
                 "body":comment.body,
                 "subreddit":comment.subreddit.display_name,
                 "created_utc":comment.created_utc,
