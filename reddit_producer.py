@@ -3,7 +3,7 @@ import socket
 import praw
 from praw.models.reddit.subreddit import SubredditStream
 from datetime import datetime
-
+import pandas as pd
 
 
 class RedditProducer(SubredditStream):
@@ -15,20 +15,29 @@ class RedditProducer(SubredditStream):
         for comment in self.comments(skip_existing=False):
             ###### your logic goes here #######
 
+            def get_num_word(x):
+                each_word = x.split()
+                each_word = pd.Series(each_word)
+                unique_word = each_word.unique()
+                num_word = len(unique_word)
+                return num_word
+
             bigtime = str(datetime.utcfromtimestamp(comment.created_utc)).split()
             date = bigtime[0]
             time = bigtime[1]
 
+            avg_word = get_num_word(comment.body)
+
             data = {
                 "author":comment.author.name,
                 "body":comment.body,
+                "words":avg_word,
                 "subreddit":comment.subreddit.display_name,
-                "created_utc":comment.created_utc,
                 "date":date,
                 "time":time
             }
 
-            print(data['created_utc'])
+            print(data['author'],"->", data['words'])
 
             self.socket.send((repr(data) +'\n').encode('utf-8'))
 

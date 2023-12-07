@@ -37,5 +37,5 @@ for comments in stream.comments(skip_existing=True):
                 collected]
 
     new_df.loc[count] = new_post
-    new_df.to_csv("UKandUS.csv")
+    new_df.to_csv("reddit_data.csv")
 
